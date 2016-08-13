@@ -1,6 +1,6 @@
 {
   "name": "metascrape",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Node web scraper that extracts metadata static & javascript websites using HTML, Open Graph, Twitter metadata",
   "main": "./src/index.js",
   "scripts": {

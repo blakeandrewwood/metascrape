@@ -11,7 +11,7 @@
 npm install metascrape
 ```
 
-## Useage
+## Usage
 
 ```javascript
 
