@@ -1,7 +1,9 @@
 ## Main Features
 
-* Loads page application webpages
+* Loads single page application metadata
+* Loads javascript delayed metadata
 * OpenGraph metadata
+* Ensures file paths include fqdn
 
 ## Install
 
