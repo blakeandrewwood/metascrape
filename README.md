@@ -21,7 +21,7 @@ metascrape.fetch('http://github.com', 1000).then((response) => {
 ```
 You will end up with an object like this:
 
-```json
+```javascript
 {
 	url: 'https://github.com/',
     normal: {
