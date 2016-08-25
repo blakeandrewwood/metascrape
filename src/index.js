@@ -32,7 +32,9 @@ const Metascrape = {
     let instance, sitepage, loadedUrl;
 
     // Create phantom instance
-    return phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'])
+    return phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'], {
+      logLevel: 'error'
+    })
     .then(inst => {
       instance = inst;
       return instance.createPage();
