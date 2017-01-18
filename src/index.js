@@ -22,65 +22,82 @@ const regex = {
  */
 const Metascrape = {
 
+  timeout: null,
+
   /**
    * Fetch
    * @param {string} url - website to scrape metadata from.
    * @param {number} timeout - amount of time to wait for website to load.
    *
    */
-  fetch(url, timeout) {
+  fetch(url, timeout, settings) {
     let instance, sitepage, loadedUrl;
 
-    // Create phantom instance
-    return phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'], {
-      logLevel: 'error'
-    })
-    .then(inst => {
-      instance = inst;
-      return instance.createPage();
-    })
+    return new Promise((resolve, reject) => {
 
-    // Open webpage
-    .then(page => {
-      sitepage = page;
-      return sitepage.open(url);
-    })
+      Metascrape.timeout = setTimeout(function() {
+        reject({ error: 'Timeout' });
+      }, settings.timeout || 10000);
 
-    // Get redirected or 'real' url
-    .then(status => {
-      return sitepage.property('url')
-    })
+      // Create phantom instance
+      return phantom.create(['--ignore-ssl-errors=yes', '--load-images=no'], {
+        logLevel: 'error'
+      })
+      .then(inst => {
+        instance = inst;
+        return instance.createPage();
+      })
 
-    // Evaluate webpage
-    .then(_url => {
-      loadedUrl = _url;
-      return new Promise((resolve) => {
+      // Open webpage
+      .then(page => {
+        sitepage = page;
+        return sitepage.open(url);
+      })
 
-        // Timeout to load javascript content
-        let sleep = (timeout) ? timeout : 0;
-        setTimeout(function() {
-          var evaluate = sitepage.evaluate(function() {
-            var html = document.getElementsByTagName('head')[0].innerHTML;
-            return html;
-          });
-          resolve(evaluate);
-        }, sleep);
+      // Get redirected or 'real' url
+      .then(status => {
+        return sitepage.property('url')
+      })
 
+      // Evaluate webpage
+      .then(_url => {
+        loadedUrl = _url;
+        return new Promise((resolve) => {
+
+          // Timeout to load javascript content
+          let sleep = (timeout) ? timeout : 0;
+          setTimeout(function() {
+            var evaluate = sitepage.evaluate(function() {
+              var html = document.getElementsByTagName('head')[0].innerHTML;
+              return html;
+            });
+            resolve(evaluate);
+          }, sleep);
+
+        });
+      })
+
+      // Extract metadata
+      .then(rawHtml => {
+        sitepage.close();
+        instance.exit();
+        return Metascrape.extract(loadedUrl, rawHtml);
+      })
+
+      .then(response => {
+        resolve(response);
+      })
+
+      // Cleanup & exit
+      .catch(error => {
+        instance.exit();
+        reject(error);
+        return error;
       });
+
     })
 
-    // Extract metadata
-    .then(rawHtml => {
-      sitepage.close();
-      instance.exit();
-      return Metascrape.extract(loadedUrl, rawHtml);
-    })
 
-    // Cleanup & exit
-    .catch(error => {
-      instance.exit();
-      return error;
-    });
   },
 
   /**
