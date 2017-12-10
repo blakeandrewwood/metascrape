@@ -18,7 +18,7 @@ npm install metascrape
 const metascrape = require('metascrape');
 
 metascrape.fetch('http://github.com', 1000).then((response) => {
-	console.log(response);
+    console.log(response);
 });
 ```
 You will end up with an object like this:
