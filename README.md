@@ -25,7 +25,7 @@ You will end up with an object like this:
 
 ```javascript
 {
-	url: 'https://github.com/',
+    url: 'https://github.com/',
     normal: {
     	viewport: 'width=device-width',
     	'browser-stats-url': 'https://api.github.com/_private/browser/stats',
